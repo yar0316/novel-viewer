@@ -22,7 +22,7 @@ function novelDetailApp() {
         
         async loadNovelDetail() {
             try {
-                const response = await fetch('/assets/data/novels.json');
+                const response = await fetch('/frontend/assets/data/novels.json');
                 const data = await response.json();
                 
                 // 指定されたIDの小説を検索

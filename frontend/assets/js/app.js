@@ -25,7 +25,7 @@ function novelApp() {
         // メソッド
         async loadNovels() {
             try {
-                const response = await fetch('/assets/data/novels.json');
+                const response = await fetch('/frontend/assets/data/novels.json');
                 const data = await response.json();
                 this.novels = data.novels;
                 console.log('小説データを読み込みました:', this.novels);
