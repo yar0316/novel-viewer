@@ -1,0 +1,4 @@
+# Python dependencies for novel data sync
+requests>=2.31.0
+PyYAML>=6.0.1
+python-frontmatter>=1.0.0

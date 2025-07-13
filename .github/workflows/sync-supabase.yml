@@ -1,0 +1,59 @@
+# GitHub Actions: 小説データをSupabaseに自動同期
+# 別リポジトリからのrepository_dispatchイベントをトリガーに実行
+
+name: Sync Novel Data to Supabase
+
+on:
+  repository_dispatch:
+    types: [sync-novel-data] # 小説データリポジトリから送られるイベントタイプ
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Main Repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Novel Data Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.client_payload.data_repo || 'user/novel-data-repo' }}
+          token: ${{ secrets.DATA_REPO_PAT }}
+          path: 'temp_data'
+          ref: ${{ github.event.client_payload.ref || 'main' }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Validate Novel Data Structure
+        run: |
+          echo "Validating novel data structure..."
+          python scripts/validate_data.py temp_data
+
+      - name: Sync to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          echo "Starting Supabase sync..."
+          python scripts/sync_supabase.py temp_data
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf temp_data
+          echo "Cleanup completed"
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ Sync failed. Check the logs above for details."
+          # 必要に応じてSlack/Discord通知を追加

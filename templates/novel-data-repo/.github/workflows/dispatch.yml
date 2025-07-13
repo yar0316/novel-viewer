@@ -1,0 +1,59 @@
+# 小説データ管理リポジトリ用GitHub Actions
+# pushを検知してメインアプリリポジトリに通知を送信
+
+name: Notify Main App Repo
+
+on:
+  push:
+    branches: 
+      - main
+    paths:
+      - 'novels/**'  # novelsディレクトリ内の変更のみをトリガー
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # 前回のコミットとの差分を取得するため
+
+      - name: Check Changed Files
+        id: changes
+        run: |
+          # 変更されたファイルを取得
+          changed_files=$(git diff --name-only HEAD~1 HEAD | grep '^novels/' || true)
+          if [ -z "$changed_files" ]; then
+            echo "No novel files changed, skipping sync."
+            echo "should_sync=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changed files:"
+            echo "$changed_files"
+            echo "should_sync=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger Sync Workflow in Main App
+        if: steps.changes.outputs.should_sync == 'true'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISPATCH_PAT }}
+          repository: yar0316/novel-viewer  # メインアプリリポジトリ（要変更）
+          event-type: sync-novel-data
+          client-payload: |
+            {
+              "data_repo": "${{ github.repository }}",
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "pusher": "${{ github.actor }}",
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
+
+      - name: Log Dispatch Event
+        if: steps.changes.outputs.should_sync == 'true'
+        run: |
+          echo "✅ Successfully triggered sync workflow"
+          echo "Repository: ${{ github.repository }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Pusher: ${{ github.actor }}"
