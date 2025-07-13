@@ -8,7 +8,7 @@ on:
     branches: 
       - main
     paths:
-      - 'novels/**'  # novelsディレクトリ内の変更のみをトリガー
+      - '*/manuscript/**'  # 各書名/manuscriptディレクトリ内の変更のみをトリガー
 
 jobs:
   dispatch:
@@ -23,8 +23,8 @@ jobs:
       - name: Check Changed Files
         id: changes
         run: |
-          # 変更されたファイルを取得
-          changed_files=$(git diff --name-only HEAD~1 HEAD | grep '^novels/' || true)
+          # 変更されたファイルを取得（書名/manuscript/ 形式）
+          changed_files=$(git diff --name-only HEAD~1 HEAD | grep '/manuscript/' || true)
           if [ -z "$changed_files" ]; then
             echo "No novel files changed, skipping sync."
             echo "should_sync=false" >> $GITHUB_OUTPUT

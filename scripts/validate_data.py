@@ -81,25 +81,24 @@ def main():
         log(f"❌ Data directory {data_dir} does not exist")
         sys.exit(1)
     
-    # novelsディレクトリを探す
-    novels_dir = data_dir / "novels"
-    if not novels_dir.exists():
-        log(f"❌ Novels directory {novels_dir} does not exist")
-        sys.exit(1)
-    
     log(f"🔍 Validating data structure in {data_dir}")
     
     total_errors = []
     total_warnings = []
     novel_count = 0
     
-    # 各小説ディレクトリを検証
-    for novel_dir in novels_dir.iterdir():
-        if novel_dir.is_dir():
-            novel_count += 1
-            errors, warnings = validate_novel_directory(novel_dir)
-            total_errors.extend(errors)
-            total_warnings.extend(warnings)
+    # データディレクトリ直下の各書名ディレクトリを検証
+    for book_dir in data_dir.iterdir():
+        if book_dir.is_dir() and not book_dir.name.startswith('.'):
+            # manuscript ディレクトリがあるかチェック
+            manuscript_dir = book_dir / "manuscript"
+            if manuscript_dir.exists() and manuscript_dir.is_dir():
+                novel_count += 1
+                errors, warnings = validate_novel_directory(manuscript_dir)
+                total_errors.extend(errors)
+                total_warnings.extend(warnings)
+            else:
+                total_warnings.append(f"Skipping {book_dir.name}: manuscript directory not found")
     
     # 結果の出力
     log(f"📊 Validated {novel_count} novels")

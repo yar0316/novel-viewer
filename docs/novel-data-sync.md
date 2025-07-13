@@ -9,12 +9,13 @@
 ```
 小説データリポジトリ          メインアプリリポジトリ         Supabase
 ┌─────────────────┐         ┌─────────────────┐         ┌──────────┐
-│ novels/         │ push    │ GitHub Actions  │ upsert  │ novels   │
-│ ├─novel-a/      │ ──────→ │ sync-supabase   │ ──────→ │ episodes │
-│ │ ├─info.yml    │         │                 │         │          │
-│ │ ├─001.md      │         │                 │         │          │
-│ │ └─002.md      │         │                 │         │          │
-│ └─novel-b/      │         │                 │         │          │
+│ 書名A/          │ push    │ GitHub Actions  │ upsert  │ novels   │
+│ └─manuscript/   │ ──────→ │ sync-supabase   │ ──────→ │ episodes │
+│   ├─info.yml    │         │                 │         │          │
+│   ├─001.md      │         │                 │         │          │
+│   └─002.md      │         │                 │         │          │
+│ 書名B/          │         │                 │         │          │
+│ └─manuscript/   │         │                 │         │          │
 └─────────────────┘         └─────────────────┘         └──────────┘
 ```
 
@@ -26,12 +27,13 @@
 
 ```
 novel-data-repo/
-└── novels/
-    ├── my-first-novel/
-    │   ├── info.yml
-    │   ├── 001.md
-    │   └── 002.md
-    └── another-story/
+├── 僕の最初の小説/
+│   └── manuscript/
+│       ├── info.yml
+│       ├── 001.md
+│       └── 002.md
+└── もう一つの物語/
+    └── manuscript/
         ├── info.yml
         └── 001.md
 ```

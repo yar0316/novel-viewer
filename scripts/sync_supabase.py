@@ -125,22 +125,22 @@ def main():
     
     log(f"🚀 Starting sync from {data_dir}")
     
-    # novelsディレクトリを探す
-    novels_dir = data_dir / "novels"
-    if not novels_dir.exists():
-        log(f"❌ Novels directory {novels_dir} does not exist")
-        sys.exit(1)
-    
+    # 書名ディレクトリを探す（novels廃止、直接書名ディレクトリを探索）
     all_novels = []
     all_episodes = []
     
-    # 各小説ディレクトリを処理
-    for novel_dir in novels_dir.iterdir():
-        if novel_dir.is_dir():
-            novel_data, episodes_data = process_novel_directory(novel_dir)
-            if novel_data:
-                all_novels.append(novel_data)
-                all_episodes.extend(episodes_data)
+    # データディレクトリ直下の各書名ディレクトリを処理
+    for book_dir in data_dir.iterdir():
+        if book_dir.is_dir() and not book_dir.name.startswith('.'):
+            # manuscript ディレクトリがあるかチェック
+            manuscript_dir = book_dir / "manuscript"
+            if manuscript_dir.exists() and manuscript_dir.is_dir():
+                novel_data, episodes_data = process_novel_directory(manuscript_dir)
+                if novel_data:
+                    all_novels.append(novel_data)
+                    all_episodes.extend(episodes_data)
+            else:
+                log(f"⚠️  Skipping {book_dir.name}: manuscript directory not found")
     
     if not all_novels:
         log("⚠️  No valid novels found to sync")

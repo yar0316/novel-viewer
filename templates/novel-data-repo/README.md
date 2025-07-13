@@ -8,8 +8,8 @@
 novel-data-repo/
 ├── .github/workflows/
 │   └── dispatch.yml          # 自動同期用GitHub Actions
-├── novels/                   # 小説データディレクトリ
-│   └── sample-novel/         # 小説ごとのディレクトリ
+├── 書名/                     # 小説ごとのディレクトリ（書名）
+│   └── manuscript/           # 原稿ディレクトリ
 │       ├── info.yml          # 小説の基本情報
 │       ├── 001.md            # 第1話
 │       ├── 002.md            # 第2話
@@ -62,7 +62,7 @@ published_at: "2025-07-13"
 
 ## 🚀 自動同期
 
-このリポジトリの`novels/`ディレクトリに変更をpushすると：
+このリポジトリの`書名/manuscript/`ディレクトリに変更をpushすると：
 
 1. GitHub Actionsが自動実行
 2. メインアプリリポジトリに通知
@@ -88,13 +88,14 @@ Settings → Secrets and variables → Actions で以下を設定：
 ## 📖 使用方法
 
 ### 新しい小説を追加
-1. `novels/`に新しいディレクトリを作成
-2. `info.yml`で基本情報を設定
-3. `001.md`から話数を追加
-4. コミット・プッシュで自動同期
+1. 書名のディレクトリを作成
+2. その中に`manuscript/`ディレクトリを作成
+3. `manuscript/info.yml`で基本情報を設定
+4. `manuscript/001.md`から話数を追加
+5. コミット・プッシュで自動同期
 
 ### エピソードを追加
-1. 該当小説ディレクトリに新しい`.md`ファイルを作成
+1. 該当小説の`manuscript/`ディレクトリに新しい`.md`ファイルを作成
 2. 連番でファイル名を設定（002.md, 003.md...）
 3. コミット・プッシュで自動同期
 
@@ -113,7 +114,7 @@ Settings → Secrets and variables → Actions で以下を設定：
 3. 必須フィールドが設定されているか確認
 
 ### 同期されない場合
-1. `novels/`ディレクトリ内のファイルを変更したか確認
+1. `書名/manuscript/`ディレクトリ内のファイルを変更したか確認
 2. Personal Access Tokenの権限をチェック
 3. メインアプリリポジトリ名が正しいか確認
 
