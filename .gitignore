@@ -1,0 +1,25 @@
+# バックアップ・参考資料
+bk/
+
+# 一時ファイル
+*.tmp
+*.log
+
+# OSが生成するファイル
+.DS_Store
+Thumbs.db
+
+# IDEファイル
+.vscode/
+.idea/
+
+# ビルドファイル
+dist/
+build/
+
+# 依存関係
+node_modules/
+
+# 環境設定
+.env
+.env.local

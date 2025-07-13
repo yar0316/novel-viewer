@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title x-text="novel.title + ' - Web小説サイト'"></title>
+    
+    <!-- PicoCSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- カスタムCSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div x-data="episodeApp()">
+        <header>
+            <h1><a href="index.html">Web小説サイト</a></h1>
+        </header>
+        
+        <main>
+            <div class="episode-container">
+                <article class="episode-content">
+                    <h1 class="episode-title" x-text="episode.title"></h1>
+                    <div class="novel-text">
+                        <template x-for="paragraph in episode.content" :key="paragraph.id">
+                            <p x-text="paragraph.text"></p>
+                        </template>
+                    </div>
+                </article>
+
+                <nav class="episode-navigation">
+                    <a href="#" @click.prevent="goToPrevEpisode()" class="prev-episode" x-show="hasPrevEpisode">前の話へ</a>
+                    <a href="novel-detail.html" @click.prevent="backToDetails()" class="back-to-details">目次へ戻る</a>
+                    <a href="#" @click.prevent="goToNextEpisode()" class="next-episode" x-show="hasNextEpisode">次の話へ</a>
+                </nav>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Web小説サイト</p>
+        </footer>
+    </div>
+    
+    <script src="../assets/js/episode.js"></script>
+</body>
+</html>

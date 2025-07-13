@@ -1,0 +1,222 @@
+/* 基本的なスタイル */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* ヘッダー */
+header {
+    background: #fff;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* 検索ボックス */
+.search-box {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.search-box input {
+    width: 70%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 3px 0 0 3px;
+}
+
+.search-box button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    background: #007bff;
+    color: white;
+    border-radius: 0 3px 3px 0;
+    cursor: pointer;
+}
+
+/* メインコンテンツ */
+main {
+    padding: 1rem;
+}
+
+/* 小説リスト */
+.novel-list .novel-item {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 3px;
+}
+
+.novel-item h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.novel-item h2 a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.novel-item .summary {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.novel-item .meta {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* 小説詳細ページ */
+.novel-detail-container {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    border-radius: 3px;
+}
+
+.novel-info h1 {
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.novel-info .author {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.novel-info .summary {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #333;
+}
+
+.chapter-list {
+    margin-top: 2.5rem;
+}
+
+.chapter-list h2 {
+    font-size: 1.3rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.chapter-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chapter-list li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.chapter-list li a:hover {
+    background-color: #f9f9f9;
+}
+
+.chapter-list .chapter-title {
+    font-size: 1.1rem;
+}
+
+.chapter-list .post-date {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+header h1 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 章閲覧ページ */
+.chapter-container {
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid #ddd;
+}
+
+.chapter-content .chapter-title {
+    text-align: center;
+    font-size: 1.6rem;
+    margin-top: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.novel-text {
+    font-size: 1.1rem; /* 読みやすいように少し大きめに */
+    line-height: 1.8;   /* 行間を広めに */
+    padding: 0 1rem;
+}
+
+.novel-text p {
+    margin-bottom: 1.5em;
+}
+
+.chapter-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.chapter-navigation a {
+    display: inline-block;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.chapter-navigation a:hover {
+    background-color: #0056b3;
+}
+
+.chapter-navigation .back-to-details {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.chapter-navigation .back-to-details:hover {
+    background-color: #5a6268;
+}

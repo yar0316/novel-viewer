@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "onAssistantMessage": ".claude/hooks/hook_stop_words.sh"
+  }
+}

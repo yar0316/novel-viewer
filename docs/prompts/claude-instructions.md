@@ -1,0 +1,2 @@
+Githubにパブリックリポジトリを作成して、pushしてください。完了したらこちらでVercelの設定をします。
+Githubでの作業にはGithub CLIを使うこと。
