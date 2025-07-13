@@ -1,22 +1,17 @@
 {
-  "buildCommand": null,
   "outputDirectory": "frontend",
-  "devCommand": null,
-  "installCommand": null,
-  "framework": null,
-  "public": true,
   "rewrites": [
     {
       "source": "/",
-      "destination": "/src/index.html"
+      "destination": "src/index.html"
     },
     {
       "source": "/novel-detail.html",
-      "destination": "/src/novel-detail.html"
+      "destination": "src/novel-detail.html"
     },
     {
       "source": "/episode.html",
-      "destination": "/src/episode.html"
+      "destination": "src/episode.html"
     }
   ]
 }
