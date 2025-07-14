@@ -104,6 +104,16 @@ def process_novel_directory(novel_dir):
         log(f"❌ Invalid ID format in {info_file}: {novel_data['id']} must be numeric")
         return None, []
     
+    # フィールド名をデータベーススキーマに合わせて変更
+    if 'description' in novel_data:
+        novel_data['summary'] = novel_data.pop('description')
+    
+    # データベーススキーマに存在しないフィールドを削除
+    fields_to_remove = ['status']
+    for field in fields_to_remove:
+        if field in novel_data:
+            del novel_data[field]
+    
     # 現在時刻を更新日時として設定
     novel_data['updated_at'] = datetime.now().isoformat()
     
