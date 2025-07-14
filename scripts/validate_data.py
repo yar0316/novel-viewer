@@ -32,8 +32,8 @@ def validate_novel_directory(novel_dir):
         errors.append(f"Invalid YAML in {info_file}: {e}")
         return errors, warnings
     
-    # 必須フィールドの確認
-    required_fields = ['id', 'title', 'author']
+    # 必須フィールドの確認（idは自動採番のため不要）
+    required_fields = ['title', 'author']
     for field in required_fields:
         if field not in novel_data:
             errors.append(f"Missing required field '{field}' in {info_file}")
