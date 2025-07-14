@@ -9,4 +9,12 @@
 
 ---
 
-**最終更新**: 2025-07-13
+**最終更新**: 2025-07-14
+
+## 重要な実装状況
+
+### Basic認証機能
+- **実装完了**: `src/middleware.ts`でBasic認証を実装
+- **設定方法**: [Basic認証設定ガイド](./docs/basic-auth.md)を参照
+- **環境変数**: `BASIC_AUTH_ENABLED`, `BASIC_AUTH_USER`, `BASIC_AUTH_PASSWORD`
+- **ローカル開発**: `.env.local`で`BASIC_AUTH_ENABLED=false`に設定推奨

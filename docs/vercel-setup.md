@@ -39,14 +39,25 @@ Vercelは自動的にNext.js 15の以下の機能をサポートします：
 - TypeScript
 - Tailwind CSS
 
-### 1.4 環境変数設定（オプション）
+### 1.4 環境変数設定
 
-現在の実装では認証機能はありませんが、将来的にBasic認証を追加する場合：
+#### Supabase接続用環境変数（必須）
+**Supabaseインテグレーションにより自動設定されます**
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+#### Basic認証用環境変数（オプション）
+サイトアクセスを制限したい場合は以下を設定：
 
 1. Vercelプロジェクトの Settings > Environment Variables
-2. 必要に応じて認証関連の環境変数を追加
+2. 以下の環境変数を追加：
+   ```
+   BASIC_AUTH_ENABLED=true
+   BASIC_AUTH_USER=your_username  
+   BASIC_AUTH_PASSWORD=your_password
+   ```
 
-**現在の必須環境変数**: Supabaseインテグレーションにより自動設定されます
+**詳細な設定方法**: [Basic認証設定ガイド](./basic-auth.md)を参照
 
 ## 2. Supabaseセットアップ
 
