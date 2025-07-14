@@ -34,26 +34,21 @@ export const mockNovels: Novel[] = [
 
 export const mockEpisodes: Episode[] = [
   {
-    id: 1,
+    id: 'ep1',
     novel_id: 1,
     title: '第一章: 新たな始まり',
-    post_date: '2025-06-01T00:00:00Z',
-    content: [
-      { id: 1, text: '　ここは章の本文が入ります。読みやすさを重視し、行間や文字サイズを調整します。' },
-      { id: 2, text: '　吾輩は猫である。名前はまだ無い。' }
-    ],
-    order: 1,
+    episode_number: 1,
+    published_at: '2025-06-01T00:00:00Z',
+    content: '　ここは章の本文が入ります。読みやすさを重視し、行間や文字サイズを調整します。\n\n　吾輩は猫である。名前はまだ無い。',
     created_at: '2025-06-01T00:00:00Z'
   },
   {
-    id: 2,
+    id: 'ep2',
     novel_id: 1,
     title: '第二章: 初めての仲間',
-    post_date: '2025-06-08T00:00:00Z',
-    content: [
-      { id: 3, text: '　第二章の内容です。' }
-    ],
-    order: 2,
+    episode_number: 2,
+    published_at: '2025-06-08T00:00:00Z',
+    content: '　第二章の内容です。',
     created_at: '2025-06-08T00:00:00Z'
   }
 ]

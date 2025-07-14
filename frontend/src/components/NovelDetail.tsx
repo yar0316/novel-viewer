@@ -4,17 +4,10 @@
  */
 import Link from 'next/link'
 import { EpisodeList } from './EpisodeList'
-import type { Novel } from '@/lib/types'
+import type { NovelWithEpisodes } from '@/lib/types'
 
 interface NovelDetailProps {
-  novel: Novel & {
-    episodes?: Array<{
-      id: string
-      title: string
-      episode_number: number
-      published_at: string
-    }>
-  }
+  novel: NovelWithEpisodes
 }
 
 export function NovelDetail({ novel }: NovelDetailProps) {

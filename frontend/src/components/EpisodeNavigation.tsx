@@ -17,8 +17,6 @@ interface EpisodeNavigationProps {
 
 export function EpisodeNavigation({
   novelId,
-  currentEpisodeId,
-  currentEpisodeNumber,
   prevEpisode,
   nextEpisode,
   showTableOfContents = true,

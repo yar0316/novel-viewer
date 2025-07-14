@@ -85,3 +85,15 @@ export interface EpisodeDetail {
     nextEpisode: EpisodeInfo | null
   }
 }
+
+/**
+ * 小説詳細画面用の拡張型
+ */
+export interface NovelWithEpisodes extends Omit<Novel, 'episodes'> {
+  episodes: Array<{
+    id: string
+    title: string
+    episode_number: number
+    published_at: string
+  }>
+}

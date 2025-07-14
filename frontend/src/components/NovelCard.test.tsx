@@ -50,7 +50,7 @@ describe('NovelCard', () => {
   })
 
   test('作者がない場合は作者欄が表示されない', () => {
-    const novelWithoutAuthor = { ...mockNovel, author: undefined }
+    const novelWithoutAuthor = { ...mockNovel, author: '' }
     render(<NovelCard novel={novelWithoutAuthor} />)
     
     expect(screen.queryByText(/作者:/)).not.toBeInTheDocument()

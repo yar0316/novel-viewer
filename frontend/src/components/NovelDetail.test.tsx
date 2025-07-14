@@ -4,7 +4,7 @@
  */
 import { render, screen } from '@testing-library/react'
 import { NovelDetail } from './NovelDetail'
-import type { Novel } from '@/lib/types'
+import type { Novel, NovelWithEpisodes } from '@/lib/types'
 
 // テスト用のモックデータ
 const mockNovelWithEpisodes = {
@@ -40,17 +40,12 @@ const mockNovelWithoutEpisodes = {
   id: 2,
   title: "話なし小説",
   author: "テスト作者2",
+  summary: "話がない小説です。",
   description: "話がない小説です。",
   updated_at: "2025-07-11T12:00:00Z",
+  created_at: "2025-07-11T12:00:00Z",
   episodes: []
-} as Novel & {
-  episodes: Array<{
-    id: string
-    title: string
-    episode_number: number
-    published_at: string
-  }>
-}
+} as NovelWithEpisodes
 
 describe('NovelDetail', () => {
   test('小説のタイトルが表示される', () => {
@@ -97,7 +92,7 @@ describe('NovelDetail', () => {
   })
 
   test('作者が設定されていない場合は作者情報が表示されない', () => {
-    const novelWithoutAuthor = { ...mockNovelWithEpisodes, author: undefined }
+    const novelWithoutAuthor = { ...mockNovelWithEpisodes, author: '' }
     render(<NovelDetail novel={novelWithoutAuthor} />)
     expect(screen.queryByText(/作者:/)).not.toBeInTheDocument()
   })

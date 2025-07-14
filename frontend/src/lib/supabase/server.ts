@@ -47,11 +47,19 @@ export async function createClient() {
  * サーバーサイドでのみ使用
  */
 export function createAdminClient() {
+  // 環境変数が設定されていない場合はnullを返す
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return null
+  }
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
-      cookies: {} // サーバー間アクセスなのでCookie管理は不要
+      cookies: {
+        getAll: () => [],
+        setAll: () => {},
+      }
     }
   )
 }

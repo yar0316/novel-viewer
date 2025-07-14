@@ -3,7 +3,7 @@
  * サーバーサイドで使用する型安全なデータ取得関数
  */
 import { createClient, createAdminClient } from './server'
-import type { Novel, Episode, SearchParams, PaginationParams, EpisodeDetail } from '../types'
+import type { Novel, Episode, SearchParams, PaginationParams, EpisodeDetail, NovelWithEpisodes } from '../types'
 
 // 開発環境用のモックデータ
 const mockNovels: Novel[] = [
@@ -157,6 +157,11 @@ export async function getNovelsList(
 
   const supabase = await createClient()
   
+  if (!supabase) {
+    console.error('Supabase client creation failed')
+    return { data: null, error: { message: 'Database connection failed' } }
+  }
+  
   let query = supabase
     .from('novels')
     .select('*')
@@ -220,12 +225,17 @@ export async function getNovelDetail(id: string) {
         ...novel, 
         description: novel.summary, // summaryをdescriptionとして使用
         episodes 
-      }, 
+      } as NovelWithEpisodes, 
       error: null 
     }
   }
 
   const supabase = await createClient()
+  
+  if (!supabase) {
+    console.error('Supabase client creation failed')
+    return { data: null, error: { message: 'Database connection failed' } }
+  }
   
   // 小説情報と話一覧を並行取得
   const [novelResult, episodesResult] = await Promise.all([
@@ -242,7 +252,7 @@ export async function getNovelDetail(id: string) {
     data: { 
       ...novelResult.data as Novel, 
       episodes: episodesResult.data || [] 
-    }, 
+    } as NovelWithEpisodes, 
     error: null 
   }
 }
@@ -252,6 +262,11 @@ export async function getNovelDetail(id: string) {
  */
 export async function getNovelById(id: string) {
   const supabase = await createClient()
+  
+  if (!supabase) {
+    console.error('Supabase client creation failed')
+    return { data: null, error: { message: 'Database connection failed' } }
+  }
   
   const { data, error } = await supabase
     .from('novels')
@@ -273,11 +288,16 @@ export async function getNovelById(id: string) {
 export async function getEpisodesByNovelId(novelId: string) {
   const supabase = await createClient()
   
+  if (!supabase) {
+    console.error('Supabase client creation failed')
+    return { data: null, error: { message: 'Database connection failed' } }
+  }
+  
   const { data, error } = await supabase
     .from('episodes')
     .select('*')
     .eq('novel_id', novelId)
-    .order('order', { ascending: true })
+    .order('episode_number', { ascending: true })
 
   if (error) {
     console.error('Error fetching episodes:', error)
@@ -292,6 +312,11 @@ export async function getEpisodesByNovelId(novelId: string) {
  */
 export async function getEpisodeById(id: string) {
   const supabase = await createClient()
+  
+  if (!supabase) {
+    console.error('Supabase client creation failed')
+    return { data: null, error: { message: 'Database connection failed' } }
+  }
   
   const { data, error } = await supabase
     .from('episodes')
@@ -310,7 +335,7 @@ export async function getEpisodeById(id: string) {
 /**
  * 話詳細を取得（ナビゲーション情報込み）
  */
-export async function getEpisodeDetail(novelId: string, episodeId: string): Promise<{ data: EpisodeDetail | null, error: any }> {
+export async function getEpisodeDetail(novelId: string, episodeId: string): Promise<{ data: EpisodeDetail | null, error: unknown }> {
   // 環境変数が設定されていない場合はモックデータを返す
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     console.log('Supabase環境変数が未設定のため、モックデータを使用します')
@@ -369,6 +394,11 @@ export async function getEpisodeDetail(novelId: string, episodeId: string): Prom
 
   const supabase = await createClient()
   
+  if (!supabase) {
+    console.error('Supabase client creation failed')
+    return { data: null, error: { message: 'Database connection failed' } }
+  }
+  
   // 話詳細と小説情報を並行取得
   const [episodeResult, novelResult] = await Promise.all([
     supabase.from('episodes').select('*').eq('id', episodeId).eq('novel_id', novelId).single(),
@@ -411,6 +441,14 @@ export async function getEpisodeDetail(novelId: string, episodeId: string): Prom
  */
 export async function getAdminStats() {
   const supabase = createAdminClient()
+  
+  if (!supabase) {
+    console.error('Admin client creation failed')
+    return {
+      totalNovels: 0,
+      totalEpisodes: 0
+    }
+  }
   
   const [novelsCount, episodesCount] = await Promise.all([
     supabase.from('novels').select('*', { count: 'exact', head: true }),

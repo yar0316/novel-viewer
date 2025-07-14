@@ -3,7 +3,7 @@
  * テスト時にSupabaseの代わりに使用
  */
 import { mockNovels, mockEpisodes } from '../test-utils'
-import type { Novel, Episode, SearchParams, PaginationParams } from '../types'
+import type { SearchParams, PaginationParams } from '../types'
 
 export const mockGetNovelsList = jest.fn(async (
   searchParams?: SearchParams,
@@ -54,7 +54,7 @@ export const mockGetEpisodesByNovelId = jest.fn(async (novelId: string) => {
 })
 
 export const mockGetEpisodeById = jest.fn(async (id: string) => {
-  const episode = mockEpisodes.find(e => e.id === parseInt(id))
+  const episode = mockEpisodes.find(e => e.id === id)
   if (episode) {
     return { data: episode, error: null }
   }
