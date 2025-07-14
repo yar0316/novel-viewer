@@ -133,8 +133,19 @@ def process_novel_directory(novel_dir):
         if field in novel_data:
             del novel_data[field]
     
+    # 日付フィールドを適切なTIMESTAMP形式に変換
+    if 'created_at' in novel_data:
+        # YYYY-MM-DD形式をTIMESTAMP形式に変換
+        try:
+            from datetime import datetime as dt
+            created_date = dt.strptime(novel_data['created_at'], '%Y-%m-%d')
+            novel_data['created_at'] = created_date.isoformat() + 'Z'
+        except ValueError:
+            # 変換失敗時は現在日時を使用
+            novel_data['created_at'] = datetime.now().isoformat() + 'Z'
+    
     # 現在時刻を更新日時として設定
-    novel_data['updated_at'] = datetime.now().isoformat()
+    novel_data['updated_at'] = datetime.now().isoformat() + 'Z'
     
     # エピソードファイルを処理
     episodes_data = []
@@ -205,8 +216,23 @@ def main():
     # Supabaseに同期
     log(f"📊 Summary: {len(all_novels)} novels, {len(all_episodes)} episodes")
     
+    # temp_novel_idを保存してからデータベースに送信するデータを準備
+    novels_to_upsert = []
+    temp_id_mapping = {}  # 元のIDを保存
+    
+    for i, novel_data in enumerate(all_novels):
+        # temp_novel_idを保存
+        temp_id = novel_data.get('temp_novel_id', novel_data.get('title'))
+        temp_id_mapping[i] = temp_id
+        
+        # データベースに送信するデータをコピーしてtemp_novel_idを削除
+        novel_copy = novel_data.copy()
+        if 'temp_novel_id' in novel_copy:
+            del novel_copy['temp_novel_id']
+        novels_to_upsert.append(novel_copy)
+    
     # 1. novelsをUPSERTして、実際のIDを取得
-    novel_response = upsert_data("novels", all_novels)
+    novel_response = upsert_data("novels", novels_to_upsert)
     
     if novel_response and all_episodes:
         # 2. レスポンスから実際のnovel IDを取得してepisodesに設定
@@ -214,10 +240,10 @@ def main():
         
         # temp_novel_idと実際のIDのマッピングを作成
         id_mapping = {}
-        for i, novel_data in enumerate(all_novels):
-            if i < len(novel_response):
-                temp_id = novel_data.get('temp_novel_id')  # 元のinfo.yml ID
-                actual_id = novel_response[i]['id']  # DB自動採番ID
+        for i, novel_response_item in enumerate(novel_response):
+            if i in temp_id_mapping:
+                temp_id = temp_id_mapping[i]
+                actual_id = novel_response_item['id']  # DB自動採番ID
                 if temp_id:
                     id_mapping[temp_id] = actual_id
                     log(f"  {temp_id} → {actual_id}")
