@@ -39,7 +39,7 @@ def upsert_data(table_name, data):
     """SupabaseにデータをUPSERTする"""
     if not data:
         log(f"⚠️  No data to upsert for table '{table_name}'")
-        return
+        return None
     
     url = f"{SUPABASE_URL}/rest/v1/{table_name}"
     
@@ -48,17 +48,31 @@ def upsert_data(table_name, data):
         log(f"📤 Request URL: {url}")
         log(f"📋 Headers: {json.dumps({k: v for k, v in HEADERS.items() if k != 'Authorization'}, indent=2)}")
         
-        response = requests.post(url, headers=HEADERS, json=data)
+        # レスポンスデータを取得するためにヘッダーを追加
+        headers_with_return = HEADERS.copy()
+        headers_with_return["Prefer"] = "resolution=merge-duplicates,return=representation"
+        
+        response = requests.post(url, headers=headers_with_return, json=data)
         log(f"📥 Response status: {response.status_code}")
         
         response.raise_for_status()
         log(f"✅ Successfully upserted {len(data)} records to '{table_name}'")
+        
+        # レスポンスデータを返す
+        return response.json()
         
     except requests.exceptions.RequestException as e:
         log(f"❌ Error upserting to '{table_name}': {e}")
         if hasattr(e, 'response') and e.response:
             log(f"Response status: {e.response.status_code}")
             log(f"Response body: {e.response.text}")
+            
+            # Supabaseエラーの詳細解析
+            try:
+                error_json = e.response.json()
+                log(f"📋 Supabase error details: {json.dumps(error_json, indent=2, ensure_ascii=False)}")
+            except:
+                log("📋 Could not parse error response as JSON")
         
         # データの詳細出力
         log(f"🔍 Data being sent to '{table_name}':")
@@ -72,6 +86,8 @@ def upsert_data(table_name, data):
             log(f"  ... and {len(data) - 3} more records")
         
         sys.exit(1)
+    
+    return None
 
 def process_novel_directory(novel_dir):
     """小説ディレクトリを処理してデータを抽出"""
@@ -97,12 +113,15 @@ def process_novel_directory(novel_dir):
             log(f"❌ Missing required field '{field}' in {info_file}")
             return None, []
     
-    # IDを数値に変換（データベースのSERIAL PRIMARY KEY対応）
-    try:
-        novel_data['id'] = int(novel_data['id'])
-    except (ValueError, TypeError):
-        log(f"❌ Invalid ID format in {info_file}: {novel_data['id']} must be numeric")
-        return None, []
+    # IDを一時的に保存（episodeとの関連付けに使用）
+    temp_novel_id = novel_data['id']
+    
+    # データベースの自動採番を使用するため、idフィールドを削除
+    if 'id' in novel_data:
+        del novel_data['id']
+    
+    # 一時IDを保存（後でマッピングに使用）
+    novel_data['temp_novel_id'] = temp_novel_id
     
     # フィールド名をデータベーススキーマに合わせて変更
     if 'description' in novel_data:
@@ -127,9 +146,12 @@ def process_novel_directory(novel_dir):
                 post = frontmatter.load(f)
             
             episode = post.metadata.copy()
-            episode['novel_id'] = novel_data['id']
+            episode['temp_novel_id'] = temp_novel_id  # 一時的にinfo.ymlのIDを保存
             episode['content'] = post.content
-            episode['updated_at'] = datetime.now().isoformat()
+            
+            # episodesテーブルのスキーマに存在しないフィールドを削除
+            if 'updated_at' in episode:
+                del episode['updated_at']
             
             # 必須フィールドの確認
             if 'id' not in episode:
@@ -183,8 +205,33 @@ def main():
     # Supabaseに同期
     log(f"📊 Summary: {len(all_novels)} novels, {len(all_episodes)} episodes")
     
-    upsert_data("novels", all_novels)
-    if all_episodes:
+    # 1. novelsをUPSERTして、実際のIDを取得
+    novel_response = upsert_data("novels", all_novels)
+    
+    if novel_response and all_episodes:
+        # 2. レスポンスから実際のnovel IDを取得してepisodesに設定
+        log("🔗 Mapping novel IDs to episodes...")
+        
+        # temp_novel_idと実際のIDのマッピングを作成
+        id_mapping = {}
+        for i, novel_data in enumerate(all_novels):
+            if i < len(novel_response):
+                temp_id = novel_data.get('temp_novel_id')  # 元のinfo.yml ID
+                actual_id = novel_response[i]['id']  # DB自動採番ID
+                if temp_id:
+                    id_mapping[temp_id] = actual_id
+                    log(f"  {temp_id} → {actual_id}")
+        
+        # 3. episodesのnovel_idを実際のIDに更新
+        for episode in all_episodes:
+            temp_id = episode.get('temp_novel_id')
+            if temp_id in id_mapping:
+                episode['novel_id'] = id_mapping[temp_id]
+                del episode['temp_novel_id']  # 一時フィールドを削除
+            else:
+                log(f"⚠️  Could not map episode {episode.get('id')} to novel ID")
+        
+        # 4. episodesをUPSERT
         upsert_data("episodes", all_episodes)
     
     log("🎉 Sync completed successfully!")
