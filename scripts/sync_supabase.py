@@ -27,7 +27,7 @@ HEADERS = {
     "apikey": SERVICE_KEY,
     "Authorization": f"Bearer {SERVICE_KEY}",
     "Content-Type": "application/json",
-    "Prefer": "resolution=merge-duplicates",  # UPSERTのキー
+    "Prefer": "return=minimal",  # INSERT用ヘッダー
 }
 
 def log(message):
@@ -35,34 +35,34 @@ def log(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {message}")
 
-def upsert_data(table_name, data):
-    """SupabaseにデータをUPSERTする"""
+def insert_data(table_name, data):
+    """SupabaseにデータをINSERTする"""
     if not data:
-        log(f"⚠️  No data to upsert for table '{table_name}'")
+        log(f"⚠️  No data to insert for table '{table_name}'")
         return None
     
     url = f"{SUPABASE_URL}/rest/v1/{table_name}"
     
     try:
-        log(f"🔄 Upserting {len(data)} records to '{table_name}'...")
+        log(f"➕ Inserting {len(data)} records to '{table_name}'...")
         log(f"📤 Request URL: {url}")
         log(f"📋 Headers: {json.dumps({k: v for k, v in HEADERS.items() if k != 'Authorization'}, indent=2)}")
         
         # レスポンスデータを取得するためにヘッダーを追加
         headers_with_return = HEADERS.copy()
-        headers_with_return["Prefer"] = "resolution=merge-duplicates,return=representation"
+        headers_with_return["Prefer"] = "return=representation"  # INSERTでレスポンスデータを取得
         
         response = requests.post(url, headers=headers_with_return, json=data)
         log(f"📥 Response status: {response.status_code}")
         
         response.raise_for_status()
-        log(f"✅ Successfully upserted {len(data)} records to '{table_name}'")
+        log(f"✅ Successfully inserted {len(data)} records to '{table_name}'")
         
         # レスポンスデータを返す
         return response.json()
         
     except requests.exceptions.RequestException as e:
-        log(f"❌ Error upserting to '{table_name}': {e}")
+        log(f"❌ Error inserting to '{table_name}': {e}")
         if hasattr(e, 'response') and e.response:
             log(f"Response status: {e.response.status_code}")
             log(f"Response body: {e.response.text}")
@@ -231,8 +231,8 @@ def main():
             del novel_copy['temp_novel_id']
         novels_to_upsert.append(novel_copy)
     
-    # 1. novelsをUPSERTして、実際のIDを取得
-    novel_response = upsert_data("novels", novels_to_upsert)
+    # 1. novelsをINSERTして、実際のIDを取得
+    novel_response = insert_data("novels", novels_to_upsert)
     
     if novel_response and all_episodes:
         # 2. レスポンスから実際のnovel IDを取得してepisodesに設定
@@ -257,8 +257,8 @@ def main():
             else:
                 log(f"⚠️  Could not map episode {episode.get('id')} to novel ID")
         
-        # 4. episodesをUPSERT
-        upsert_data("episodes", all_episodes)
+        # 4. episodesをINSERT
+        insert_data("episodes", all_episodes)
     
     log("🎉 Sync completed successfully!")
 
