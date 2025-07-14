@@ -1,5 +1,15 @@
 {
   "hooks": {
-    "onAssistantMessage": ".claude/hooks/hook_stop_words.sh"
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/hook_stop_words.sh"
+          }
+        ]
+      }
+    ]
   }
 }

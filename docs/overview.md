@@ -30,92 +30,98 @@ Web小説の閲覧に特化したシンプルなWebアプリケーションで�
 
 ### フロントエンド
 
-- **HTML5**: セマンティックなマークアップ
-- **CSS3**: レスポンシブデザイン
-- **JavaScript**: バニラJavaScript
-- **Alpine.js**: リアクティブなUI構築
-- **PicoCSS**: モダンなCSSフレームワーク
+- **Next.js 15**: React 19 + App Router + Turbopack高速化
+- **shadcn/ui**: LLMフレンドリーなUIコンポーネントシステム
+- **Tailwind CSS v4**: 新エンジンによる高速ビルド + @themeディレクティブ
+- **TypeScript**: 型安全な開発体験
+- **React Server Components**: SSR/SSG最適化
 
 ### バックエンド
 
-- **API**: Supabase Auto-generated RESTful API（カスタム開発不要）
-- **データベース**: Supabase PostgreSQL
-- **API認証**: Supabase匿名キー（読み取り専用）
-- **ユーザー認証**: なし（ログイン機能なし）
+- **API**: Supabase Auto-generated RESTful API + TypeScript SDK連携
+- **データベース**: Supabase PostgreSQL + 自動型生成
+- **セキュリティ**: RLS（Row Level Security）+ 読み取り専用API
+- **型安全性**: Supabase CLI による TypeScript 型の自動生成
 
 ### インフラ構成（Vercel + Supabase）
 
-- **ホスティング**: Vercel（静的サイト + 自動デプロイ）
-- **データベース**: Supabase（PostgreSQL + Auto-generated API）
-- **API**: Supabase RESTful API（自動生成）
-- **認証**: API認証（匿名キー使用）+ Basic認証（サイトアクセス制限）
-- **デプロイ**: GitHub連携による自動デプロイ
-- **環境変数**: Vercel-Supabaseインテグレーション + Basic認証設定
+- **ホスティング**: Vercel（Next.js 15最適化 + Edge Functions）
+- **データベース**: Supabase（PostgreSQL + TypeScript型生成）
+- **API**: Supabase RESTful API（自動生成）+ RLS セキュリティ
+- **認証**: Next.js Middleware による環境別Basic認証
+- **デプロイ**: GitHub連携による自動デプロイ + Vercel-Supabaseインテグレーション
+- **環境変数**: Vercel最新の環境変数管理システム
 - **監視**: Vercel Analytics + Supabase Dashboard
-- **IaC**: 不要（マネージドサービス活用）
+- **開発体験**: Turbopack + TypeScript + shadcn/ui
 
 ### アーキテクチャ
 
-- **SPA風設計**: シングルページアプリケーション的な体験
-- **スマホファースト**: モバイル優先のレスポンシブデザイン
-- **コンポーネント指向**: 再利用可能なコンポーネント設計
+- **App Router**: Next.js 15のファイルベースルーティング + React Server Components
+- **Component-First**: shadcn/ui + Atomic Design による統一されたデザインシステム
+- **Type-Safe**: Supabase → TypeScript 型生成による型安全なAPI連携
+- **LLM-Friendly**: コンポーネント分割とJSDocによるAI協働開発最適化
+- **Edge-Optimized**: Vercel Edge Functions + Middleware活用
 
 ## ディレクトリ構造
 
 ```
 novel-viewer/
 ├── docs/                    # プロジェクト文書
-│   ├── general.md          # 総合ガイド
+│   ├── general.md          # 総合ガイド（AI協働原則含む）
 │   ├── overview.md         # プロジェクト概要（このファイル）
 │   └── prompts/            # AI用指示書
-├── frontend/               # フロントエンドソース
-│   ├── src/                # HTMLファイル
-│   │   ├── index.html      # 小説一覧画面
-│   │   ├── novel-detail.html # 小説詳細画面
-│   │   └── episode.html    # 話閲覧画面
-│   └── assets/             # 静的リソース
-│       ├── css/
-│       │   └── style.css   # カスタムスタイル
-│       └── js/             # JavaScriptファイル
-│           ├── app.js      # 小説一覧機能
-│           ├── novel-detail.js # 小説詳細機能
-│           └── episode.js  # 話閲覧機能
-├── wireframe/              # ワイヤーフレーム
+├── frontend/               # Next.js 15アプリケーション
+│   ├── app/                # App Router
+│   │   ├── layout.tsx      # ルートレイアウト
+│   │   ├── page.tsx        # 小説一覧画面
+│   │   ├── novel/[id]/     # 小説詳細画面（動的ルーティング）
+│   │   └── chapter/[id]/   # 章閲覧画面（動的ルーティング）
+│   ├── components/         # コンポーネント
+│   │   ├── ui/            # shadcn/ui基本コンポーネント
+│   │   └── custom/        # Atomic Designカスタムコンポーネント
+│   ├── lib/               # ユーティリティ
+│   │   ├── supabase.ts    # Supabase設定・型定義
+│   │   └── utils.ts       # 共通関数
+│   └── middleware.ts      # Basic認証ミドルウェア
+├── wireframe/              # ワイヤーフレーム（参考用）
 │   ├── index.html          # 一覧画面ワイヤーフレーム
 │   ├── novel-detail.html   # 詳細画面ワイヤーフレーム
-│   ├── chapter.html        # 閲覧画面ワイヤーフレーム
-│   └── style.css           # ワイヤーフレーム用スタイル
+│   └── chapter.html        # 閲覧画面ワイヤーフレーム
 └── playwright.config.json # テスト設定
 ```
 
 ## データ構造
 
-### 小説オブジェクト
+### 小説オブジェクト（TypeScript型定義）
 
-```javascript
-{
-  id: number,           // 小説ID
-  title: string,        // タイトル
-  summary: string,      // 概要
-  author: string,       // 作者名
-  updatedAt: string,    // 更新日 (YYYY/MM/DD)
-  episodes: number      // 話数
+```typescript
+interface Novel {
+  id: number;           // 小説ID
+  title: string;        // タイトル
+  summary: string;      // 概要
+  author: string;       // 作者名
+  updated_at: string;   // 更新日 (ISO string)
+  episodes: number;     // 話数
+  genre?: string;       // ジャンル（オプション）
+  tags?: string[];      // タグ配列（オプション）
 }
 ```
 
-### 話オブジェクト
+### エピソードオブジェクト（TypeScript型定義）
 
-```javascript
-{
-  id: number,           // 話ID
-  title: string,        // 話タイトル
-  postDate: string,     // 投稿日 (YYYY/MM/DD)
-  content: [            // 本文（段落配列）
-    {
-      id: number,       // 段落ID
-      text: string      // 段落テキスト
-    }
-  ]
+```typescript
+interface Episode {
+  id: number;           // エピソードID
+  novel_id: number;     // 所属小説ID
+  title: string;        // エピソードタイトル
+  post_date: string;    // 投稿日 (ISO string)
+  content: Paragraph[]; // 本文（段落配列）
+  order: number;        // 表示順序
+}
+
+interface Paragraph {
+  id: number;           // 段落ID
+  text: string;         // 段落テキスト
 }
 ```
 
@@ -150,35 +156,38 @@ novel-viewer/
 
 ### 完了済み
 
-- ✅ 3画面の基本レイアウト
-- ✅ PicoCSSベースのスタイリング
-- ✅ Alpine.jsによるリアクティブUI
-- ✅ サンプルデータでの動作確認
-- ✅ レスポンシブデザイン
+- ✅ 3画面の基本ワイヤーフレーム設計
+- ✅ Next.js 15 + shadcn/ui + Tailwind CSS v4 技術選定
+- ✅ Atomic Design ベースのコンポーネント設計
+- ✅ TypeScript型定義とSupabase連携設計
+- ✅ Gemini CLI協働による技術調査
 
 ### 今後の実装予定
 
-- 📋 実際のデータ連携
-- 📋 ローカルストレージ対応
-- 📋 ブックマーク機能
-- 📋 読書進捗管理
-- 📋 ダークモード対応
-- 📋 PWA対応
+- 📋 Next.js 15プロジェクト作成とshadcn/ui導入
+- 📋 Atomic Designベースのコンポーネント実装
+- 📋 Supabase API連携とRLS設定
+- 📋 Vercel Basic認証ミドルウェア実装
+- 📋 TypeScript型生成の自動化
+- 📋 ダークモード対応（shadcn/ui）
+- 📋 PWA対応（Next.js 15機能）
 
 ## 開発ガイドライン
 
 ### コーディング規約
 
-- **HTML**: セマンティックなタグ使用
-- **CSS**: PicoCSS変数の活用
-- **JavaScript**: ES6+記法、Alpine.js準拠
-- **命名**: ケバブケース（HTML/CSS）、キャメルケース（JavaScript）
+- **TypeScript**: 厳密な型定義、Supabase自動生成型の活用
+- **React**: React Server Components + App Router パターン
+- **shadcn/ui**: コンポーネントの一貫した使用、カスタマイズ指針
+- **Tailwind CSS v4**: @themeディレクティブ活用、レスポンシブファースト
+- **命名**: PascalCase（コンポーネント）、camelCase（関数・変数）
 
 ### ファイル命名規則
 
-- **HTML**: 機能名.html（例：episode.html）
-- **CSS**: 用途-詳細.css（例：style.css）
-- **JavaScript**: 機能名.js（例：episode.js）
+- **コンポーネント**: NovelCard.tsx（PascalCase）
+- **ページ**: page.tsx, layout.tsx（Next.js規則）
+- **ユーティリティ**: supabase.ts, utils.ts（camelCase）
+- **型定義**: types.ts, database.types.ts（camelCase）
 
 ### git運用
 

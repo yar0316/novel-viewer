@@ -23,7 +23,7 @@
 1. HTMLファイルの構造を修正
 2. CSSスタイルを追加
 3. JavaScript機能を実装
-承認いただけますでしょうか？
+承認いただけますか？
 ```
 
 ### 原則2: 部分的修正の実施
@@ -125,7 +125,7 @@ Claude CodeからGemini CLIへの依頼例
 - **常に指示を明確に**: 曖昧な指示は避け、具体的な要求を伝える
 - **既存形式の踏襲**: ワイヤーフレームやコーディングスタイルを必ず確認してから作業
 - **段階的な作業**: 大きなタスクは小さく分割して進捗確認
-- **検索禁止**: 検索・技術調査は一切行わず、必ずGemini CLIに依頼する
+- **検索禁止**: 検索・技術調査は一切行わず、必ずgeminiコマンドを実行する
 
 #### Gemini CLI活用時
 
@@ -142,12 +142,13 @@ Claude CodeからGemini CLIへの依頼例
 ## TDD開発原則
 
 このプロジェクトでは、**t-wada氏のTDD（テスト駆動開発）**を基本原則とします。
+「テスト駆動」ですので、新機能の実装も機能追加も修正も、まずはテストから実装することになります。
 
 ### TDDの基本サイクル
 
 1. **Red**: 失敗するテストを書く
 2. **Green**: テストを通す最小限のコードを書く
-3. **Refactor**: コードを改善する
+3. **Refactor**: コードを実装する
 
 ### TDD適用範囲
 
@@ -192,9 +193,10 @@ Claude CodeからGemini CLIへの依頼例
 
 #### フロントエンド
 
-- **HTML5**: セマンティックなマークアップ
-- **CSS3**: Flexbox/Grid活用、レスポンシブデザイン
-- **JavaScript**: バニラJS優先、必要に応じてライブラリ検討
+- **Next.js 15**: React 19完全対応 + App Router + TypeScript
+- **shadcn/ui**: LLMフレンドリーなUIコンポーネントシステム
+- **Tailwind CSS v4**: 新エンジンによる高速化 + @themeディレクティブ
+- **TypeScript**: 型安全な開発環境とSupabase型生成連携
 
 #### バックエンド
 
@@ -205,14 +207,14 @@ Claude CodeからGemini CLIへの依頼例
 
 #### インフラ構成（Vercel + Supabase）
 
-- **ホスティング**: Vercel（静的サイト + 自動デプロイ）
-- **データベース**: Supabase（PostgreSQL + Auto-generated API）
-- **API**: Supabase RESTful API（自動生成）
-- **認証**: API認証（匿名キー使用）+ Basic認証（Vercel Edge Middleware）
-- **デプロイ**: GitHub連携による自動デプロイ
-- **環境変数**: Vercel-Supabaseインテグレーション + Basic認証設定
+- **ホスティング**: Vercel（Next.js 15最適化 + Turbopack + Edge Functions）
+- **データベース**: Supabase（PostgreSQL + Auto-generated API + TypeScript型生成）
+- **API**: Supabase RESTful API（自動生成） + TypeScript SDK連携
+- **認証**: RLS（Row Level Security）+ Basic認証（Next.js Middleware）
+- **デプロイ**: GitHub連携による自動デプロイ + Vercel-Supabaseインテグレーション
+- **環境変数**: Vercel最新の環境変数管理システム
+- **型安全性**: Supabase CLI による自動型生成
 - **監視**: Vercel Analytics + Supabase Dashboard
-- **IaC**: 不要（マネージドサービス活用）
 
 #### デザイン要件
 
@@ -228,49 +230,52 @@ Claude CodeからGemini CLIへの依頼例
 ```
 novel-viewer/
 ├── docs/                    # 開発ドキュメント
-│   ├── ai-work-principles.md      # AI作業原則（最重要）
-│   ├── ai-collaboration-guide.md  # AI協働ガイド
-│   ├── general.md                 # このファイル
+│   ├── general.md                 # このファイル（総合ガイド）
+│   ├── overview.md                # プロジェクト概要
 │   └── prompts/                   # プロンプト集
-│       └── wireflame.md
-├── wireframe/              # ワイヤーフレーム
-│   ├── 01_top_page.html
-│   ├── 02_novel_detail.html
-│   └── 03_chapter_reading.html
-├── src/                    # ソースコード（今後作成予定）
-│   ├── index.html         # トップページ/小説一覧
-│   ├── novel-detail.html  # 小説詳細ページ
-│   ├── chapter.html       # 章閲覧ページ
-│   ├── css/               # スタイルシート
-│   ├── js/                # JavaScript
-│   └── assets/            # 画像・フォントなど
-├── data/                   # サンプルデータ（今後作成予定）
+├── wireframe/              # ワイヤーフレーム（参考用）
+│   ├── index.html         # 一覧画面ワイヤーフレーム
+│   ├── novel-detail.html  # 詳細画面ワイヤーフレーム
+│   └── chapter.html       # 閲覧画面ワイヤーフレーム
+├── frontend/               # Next.js 15アプリケーション
+│   ├── app/                # App Router
+│   │   ├── layout.tsx      # ルートレイアウト
+│   │   ├── page.tsx        # トップページ/小説一覧
+│   │   ├── novel/[id]/     # 動的ルーティング
+│   │   └── chapter/[id]/   # 章閲覧ページ
+│   ├── components/         # コンポーネント
+│   │   ├── ui/            # shadcn/ui基本コンポーネント
+│   │   └── custom/        # カスタムコンポーネント
+│   ├── lib/               # ユーティリティ
+│   │   ├── supabase.ts    # Supabase設定・型定義
+│   │   └── utils.ts       # 共通関数
+│   └── middleware.ts      # Basic認証ミドルウェア
 ├── tests/                  # テストファイル（TDD用）
-├── bk/                     # バックアップ・参考資料
 └── CLAUDE.md              # AI協働のエントリーポイント
 ```
 
 ### ファイル命名規則
 
-#### HTMLファイル
+#### Reactコンポーネント
 
-- ケバブケース使用: `novel-detail.html`
+- PascalCase使用: `NovelCard.tsx`
 - 機能を表す明確な名前
+- TypeScript必須
 
-#### CSSファイル
+#### Next.jsページ
 
-- ケバブケース使用: `main-style.css`
-- BEM記法を推奨
+- ケバブケース使用: `page.tsx`, `layout.tsx`
+- App Router規則に従う
 
-#### JavaScriptファイル
+#### ユーティリティファイル
 
-- ケバブケース使用: `novel-search.js`
+- camelCase使用: `supabase.ts`, `utils.ts`
 - 機能単位でファイル分割
 
-#### 画像ファイル
+#### 型定義ファイル
 
-- ケバブケース使用: `hero-image.png`
-- 用途を明確に示す名前
+- camelCase使用: `types.ts`
+- Supabase自動生成型との連携
 
 ## 開発ワークフロー
 
@@ -299,20 +304,21 @@ gemini -p "Web小説閲覧サイトの既存サービスを調べて、差別化
 #### 2. 実装段階
 
 ```bash
-# ワイヤーフレームを参考に実装
-# wireframe/フォルダのHTMLファイルを確認
+# Next.jsプロジェクト作成
+npx create-next-app@latest frontend --typescript --tailwind --app
 
-# Claude Codeで開発
-# - 既存のワイヤーフレームを参考に構造作成
-# - 段階的で保守しやすいコードを作成
-# - 必要に応じて画像やアセットも準備
+# shadcn/ui初期化
+cd frontend && npx shadcn-ui@latest init
+
+# Supabase型生成
+supabase gen types typescript --project-id YOUR_PROJECT_ID > lib/database.types.ts
 
 # TDDサイクルに従った段階的な開発
-# 1. テストケース作成
-# 2. HTML構造の作成
-# 3. CSS基本スタイリング
-# 4. JavaScript機能実装（TDD）
-# 5. レスポンシブ対応
+# 1. コンポーネントテスト作成
+# 2. shadcn/uiコンポーネント選定・カスタマイズ
+# 3. Atomic Design原則に従ったコンポーネント構築
+# 4. TypeScript型定義とSupabase連携
+# 5. レスポンシブ対応（Tailwind CSS v4）
 ```
 
 #### 3. 検証・改善段階
@@ -392,23 +398,25 @@ gemini -p "このコードのパフォーマンスを改善する方法を提案
 
 ## 開発フェーズ
 
-### フェーズ1: 基本構造
+### フェーズ1: Next.js基本構造
 
-- [ ] src/ディレクトリ作成
-- [ ] HTML基本構造実装
-- [ ] CSS基本スタイル実装
+- [ ] Next.js 15プロジェクト作成（App Router + TypeScript）
+- [ ] shadcn/ui初期化とTailwind CSS v4設定
+- [ ] 基本レイアウトコンポーネント実装
 
-### フェーズ2: 機能実装
+### フェーズ2: コンポーネント実装
 
-- [ ] JavaScript機能実装（TDD）
-- [ ] レスポンシブ対応
-- [ ] ブラウザ互換性確保
+- [ ] Atomic Designに基づくコンポーネント設計
+- [ ] shadcn/uiベースのカスタムコンポーネント実装
+- [ ] TypeScript型定義とSupabase連携
+- [ ] TDDによるコンポーネントテスト
 
-### フェーズ3: 最適化
+### フェーズ3: 最適化・統合
 
-- [ ] パフォーマンス最適化
-- [ ] アクセシビリティ改善
-- [ ] SEO対応
+- [ ] Supabase API連携とRLS設定
+- [ ] Vercel Basic認証ミドルウェア
+- [ ] パフォーマンス最適化（Next.js 15機能活用）
+- [ ] アクセシビリティ・SEO対応
 
 ## 参考資料
 
