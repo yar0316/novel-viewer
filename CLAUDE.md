@@ -18,3 +18,9 @@
 - **設定方法**: [Basic認証設定ガイド](./docs/basic-auth.md)を参照
 - **環境変数**: `BASIC_AUTH_ENABLED`, `BASIC_AUTH_USER`, `BASIC_AUTH_PASSWORD`
 - **ローカル開発**: `.env.local`で`BASIC_AUTH_ENABLED=false`に設定推奨
+
+### GitHub Actions自動同期システム
+- **実装完了**: booksリポジトリ → novel-viewerリポジトリ → Supabase の自動同期
+- **設定方法**: [GitHub Actions設定ガイド](./docs/github-actions-setup.md)を参照
+- **必要なPAT**: novel-viewerリポジトリアクセス用（DISPATCH_PAT）
+- **必要なSecrets**: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DATA_REPO_PAT

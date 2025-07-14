@@ -45,7 +45,12 @@ def upsert_data(table_name, data):
     
     try:
         log(f"🔄 Upserting {len(data)} records to '{table_name}'...")
+        log(f"📤 Request URL: {url}")
+        log(f"📋 Headers: {json.dumps({k: v for k, v in HEADERS.items() if k != 'Authorization'}, indent=2)}")
+        
         response = requests.post(url, headers=HEADERS, json=data)
+        log(f"📥 Response status: {response.status_code}")
+        
         response.raise_for_status()
         log(f"✅ Successfully upserted {len(data)} records to '{table_name}'")
         
@@ -54,6 +59,18 @@ def upsert_data(table_name, data):
         if hasattr(e, 'response') and e.response:
             log(f"Response status: {e.response.status_code}")
             log(f"Response body: {e.response.text}")
+        
+        # データの詳細出力
+        log(f"🔍 Data being sent to '{table_name}':")
+        for i, record in enumerate(data[:3]):  # 最初の3件のみ表示
+            log(f"  Record {i+1}: {json.dumps(record, indent=2, ensure_ascii=False, default=str)}")
+            # データ型の確認
+            log(f"  Record {i+1} types:")
+            for key, value in record.items():
+                log(f"    {key}: {type(value).__name__} = {value}")
+        if len(data) > 3:
+            log(f"  ... and {len(data) - 3} more records")
+        
         sys.exit(1)
 
 def process_novel_directory(novel_dir):
@@ -79,6 +96,13 @@ def process_novel_directory(novel_dir):
         if field not in novel_data:
             log(f"❌ Missing required field '{field}' in {info_file}")
             return None, []
+    
+    # IDを数値に変換（データベースのSERIAL PRIMARY KEY対応）
+    try:
+        novel_data['id'] = int(novel_data['id'])
+    except (ValueError, TypeError):
+        log(f"❌ Invalid ID format in {info_file}: {novel_data['id']} must be numeric")
+        return None, []
     
     # 現在時刻を更新日時として設定
     novel_data['updated_at'] = datetime.now().isoformat()
