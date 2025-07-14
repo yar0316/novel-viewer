@@ -106,15 +106,15 @@ def process_novel_directory(novel_dir):
         log(f"❌ Error reading {info_file}: {e}")
         return None, []
     
-    # 必須フィールドの確認
-    required_fields = ['id', 'title', 'author']
+    # 必須フィールドの確認（idは自動採番のため不要）
+    required_fields = ['title', 'author']
     for field in required_fields:
         if field not in novel_data:
             log(f"❌ Missing required field '{field}' in {info_file}")
             return None, []
     
-    # IDを一時的に保存（episodeとの関連付けに使用）
-    temp_novel_id = novel_data['id']
+    # IDが存在する場合は一時的に保存（episodeとの関連付けに使用）
+    temp_novel_id = novel_data.get('id', novel_data['title'])  # IDがない場合はタイトルを使用
     
     # データベースの自動採番を使用するため、idフィールドを削除
     if 'id' in novel_data:
