@@ -62,7 +62,7 @@ export function NovelDetail({ novel }: NovelDetailProps) {
       {/* 話一覧 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-gray-900">話一覧</h2>
-        <EpisodeList episodes={novel.episodes || []} novelId={novel.id} />
+        <EpisodeList episodes={novel.episodes || []} novelId={novel.id.toString()} />
       </section>
     </div>
   )

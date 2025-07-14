@@ -41,9 +41,9 @@ describe('EpisodeList', () => {
   test('投稿日が表示される', () => {
     render(<EpisodeList episodes={mockEpisodes} novelId={mockNovelId} />)
     
-    expect(screen.getByText(/投稿日: 2025\/6\/1/)).toBeInTheDocument()
-    expect(screen.getByText(/投稿日: 2025\/6\/8/)).toBeInTheDocument()
-    expect(screen.getByText(/投稿日: 2025\/6\/15/)).toBeInTheDocument()
+    expect(screen.getByText('投稿日: 2025/6/1')).toBeInTheDocument()
+    expect(screen.getByText('投稿日: 2025/6/8')).toBeInTheDocument()
+    expect(screen.getByText('投稿日: 2025/6/15')).toBeInTheDocument()
   })
 
   test('各話へのリンクが正しく設定される', () => {

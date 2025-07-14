@@ -8,6 +8,7 @@ export interface Novel {
   id: number
   title: string
   summary: string
+  description?: string
   author: string
   updated_at: string
   episodes: number
@@ -17,26 +18,27 @@ export interface Novel {
 }
 
 export interface Episode {
-  id: number
+  id: string
   novel_id: number
   title: string
-  post_date: string
-  content: Paragraph[]
-  order: number
-  created_at: string
+  episode_number: number
+  published_at: string
+  content: string
+  created_at?: string
 }
 
-export interface Paragraph {
-  id: number
-  text: string
-}
 
 /**
  * API レスポンス型
  */
+export interface ApiError {
+  message: string
+  code?: string
+}
+
 export interface ApiResponse<T> {
   data: T | null
-  error: Error | null
+  error: ApiError | null
 }
 
 /**
@@ -64,4 +66,22 @@ export interface SearchParams {
   query?: string
   genre?: string
   author?: string
+}
+
+/**
+ * エピソード詳細とナビゲーション情報
+ */
+export interface EpisodeInfo {
+  id: string
+  title: string
+  episode_number: number
+}
+
+export interface EpisodeDetail {
+  episode: Episode
+  novel: Pick<Novel, 'id' | 'title' | 'author'>
+  navigation: {
+    prevEpisode: EpisodeInfo | null
+    nextEpisode: EpisodeInfo | null
+  }
 }

@@ -13,9 +13,11 @@ import { Button } from '@/components/ui/button'
 interface SearchBoxProps {
   /** 初期値 */
   initialValue?: string
+  /** 検索実行時のコールバック（テスト用） */
+  onSearch?: (query: string) => void
 }
 
-export function SearchBox({ initialValue = '' }: SearchBoxProps) {
+export function SearchBox({ initialValue = '', onSearch }: SearchBoxProps) {
   const [query, setQuery] = useState(initialValue)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -25,10 +27,17 @@ export function SearchBox({ initialValue = '' }: SearchBoxProps) {
     const trimmedQuery = query.trim()
     
     if (trimmedQuery) {
-      const params = new URLSearchParams(searchParams)
-      params.set('search', trimmedQuery)
-      router.push(`/?${params.toString()}`)
-    } else {
+      // テスト用のコールバックがある場合は実行
+      if (onSearch) {
+        onSearch(trimmedQuery)
+      } else {
+        // 通常の動作：URLパラメータを更新
+        const params = new URLSearchParams(searchParams)
+        params.set('search', trimmedQuery)
+        router.push(`/?${params.toString()}`)
+      }
+    } else if (!onSearch) {
+      // 空の場合は検索パラメータを削除（テスト時は何もしない）
       const params = new URLSearchParams(searchParams)
       params.delete('search')
       const newUrl = params.toString() ? `/?${params.toString()}` : '/'
@@ -49,7 +58,7 @@ export function SearchBox({ initialValue = '' }: SearchBoxProps) {
       <div className="relative flex-1">
         <Input
           type="text"
-          placeholder="タイトル検索..."
+          placeholder="小説を検索..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full pr-10 h-10"

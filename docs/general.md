@@ -210,10 +210,14 @@ Claude CodeからGemini CLIへの依頼例
 - **ホスティング**: Vercel（Next.js 15最適化 + Turbopack + Edge Functions）
 - **データベース**: Supabase（PostgreSQL + Auto-generated API + TypeScript型生成）
 - **API**: Supabase RESTful API（自動生成） + TypeScript SDK連携
-- **認証**: RLS（Row Level Security）+ Basic認証（Next.js Middleware）
-- **デプロイ**: GitHub連携による自動デプロイ + Vercel-Supabaseインテグレーション
-- **環境変数**: Vercel最新の環境変数管理システム
-- **型安全性**: Supabase CLI による自動型生成
+- **デプロイ戦略**: 
+  - プレビュー環境: ブランチ毎の自動デプロイ
+  - 本番環境: mainブランチからの手動デプロイ
+  - 開発環境: ローカル + Supabase本番DB接続テスト
+- **環境変数管理**: 
+  - ローカル: `.env.local`
+  - Vercel: プロジェクト設定での環境変数管理
+- **型安全性**: 手動定義型 + 将来的にSupabase CLI自動生成への移行
 - **監視**: Vercel Analytics + Supabase Dashboard
 
 #### デザイン要件
@@ -285,6 +289,44 @@ novel-viewer/
 2. すべての作業で必須 → AI作業原則（上記）とAI協働原則を確認 ⚠️ **最重要**
 3. 実装・コーディングの場合 → TDD原則に従った開発
 4. ファイル作成・構成の場合 → プロジェクト構成と命名規則を確認
+
+### Supabase接続・デプロイワークフロー
+
+#### ローカル環境でのSupabase接続テスト
+
+```bash
+# 1. 環境変数設定
+# .env.local ファイルを作成
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# 2. ローカル開発サーバー起動
+npm run dev
+
+# 3. 動作確認
+# - ブラウザでアクセスし、実際のSupabaseからデータが取得できることを確認
+# - モックデータから実データへの切り替わりをコンソールで確認
+```
+
+#### Vercelデプロイ戦略
+
+```bash
+# 1. プレビュー環境デプロイ（開発ブランチ）
+git checkout -b feature/supabase-integration
+git push origin feature/supabase-integration
+# → 自動的にプレビューURLが生成される
+
+# 2. 環境変数設定（Vercel Dashboard）
+# プロジェクト設定 > Environment Variables で設定
+# - NEXT_PUBLIC_SUPABASE_URL
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+# 3. 本番デプロイ（mainブランチマージ後）
+git checkout main
+git merge feature/supabase-integration
+git push origin main
+# → 本番環境に自動デプロイ
+```
 
 ### 開発段階別ワークフロー
 
@@ -398,25 +440,25 @@ gemini -p "このコードのパフォーマンスを改善する方法を提案
 
 ## 開発フェーズ
 
-### フェーズ1: Next.js基本構造
+### フェーズ1: Next.js基本構造 ✅ **完了**
 
-- [ ] Next.js 15プロジェクト作成（App Router + TypeScript）
-- [ ] shadcn/ui初期化とTailwind CSS v4設定
-- [ ] 基本レイアウトコンポーネント実装
+- [x] Next.js 15プロジェクト作成（App Router + TypeScript）
+- [x] shadcn/ui初期化とTailwind CSS v4設定
+- [x] 基本レイアウトコンポーネント実装
 
-### フェーズ2: コンポーネント実装
+### フェーズ2: コンポーネント実装 ✅ **完了**
 
-- [ ] Atomic Designに基づくコンポーネント設計
-- [ ] shadcn/uiベースのカスタムコンポーネント実装
-- [ ] TypeScript型定義とSupabase連携
-- [ ] TDDによるコンポーネントテスト
+- [x] Atomic Designに基づくコンポーネント設計
+- [x] shadcn/uiベースのカスタムコンポーネント実装
+- [x] TypeScript型定義とSupabase連携準備
+- [x] TDDによるコンポーネントテスト（全59テスト通過）
 
-### フェーズ3: 最適化・統合
+### フェーズ3: 本番環境準備・デプロイ 🚀 **進行中**
 
-- [ ] Supabase API連携とRLS設定
-- [ ] Vercel Basic認証ミドルウェア
-- [ ] パフォーマンス最適化（Next.js 15機能活用）
-- [ ] アクセシビリティ・SEO対応
+- [ ] Supabase本番API連携とデータベース設定
+- [ ] Vercel環境変数設定とデプロイメント
+- [ ] 本番環境でのパフォーマンス最適化
+- [ ] SEO対応とアクセシビリティ確認
 
 ## 参考資料
 
@@ -428,4 +470,5 @@ gemini -p "このコードのパフォーマンスを改善する方法を提案
 
 ---
 
-**最終更新**: 2025-07-13  
+**最終更新**: 2025-07-14  
+**現在のステータス**: フェーズ3（本番環境準備）進行中  

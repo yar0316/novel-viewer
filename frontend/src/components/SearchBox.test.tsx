@@ -47,9 +47,10 @@ describe('SearchBox', () => {
     render(<SearchBox onSearch={mockOnSearch} />)
     
     const input = screen.getByPlaceholderText('小説を検索...')
+    const form = input.closest('form')!
     
     fireEvent.change(input, { target: { value: 'テスト検索' } })
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
+    fireEvent.submit(form)
     
     expect(mockOnSearch).toHaveBeenCalledWith('テスト検索')
   })
