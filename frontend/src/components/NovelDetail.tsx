@@ -52,6 +52,20 @@ export function NovelDetail({ novel }: NovelDetailProps) {
         </div>
       </section>
 
+      {/* あらすじ */}
+      {novel.summary && novel.summary.trim() && (
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-2">
+            あらすじ
+          </h2>
+          <div className="prose prose-gray max-w-none">
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border-l-4 border-primary/20">
+              {novel.summary}
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* 話一覧 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-gray-900">話一覧</h2>
