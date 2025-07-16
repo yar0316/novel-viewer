@@ -7,7 +7,7 @@
 export interface Novel {
   id: number
   title: string
-  summary: string
+  summary: string | null
   description?: string
   author: string
   updated_at: string
@@ -89,7 +89,8 @@ export interface EpisodeDetail {
 /**
  * 小説詳細画面用の拡張型
  */
-export interface NovelWithEpisodes extends Omit<Novel, 'episodes'> {
+export interface NovelWithEpisodes extends Omit<Novel, 'episodes' | 'summary'> {
+  summary: string | null | undefined
   episodes: Array<{
     id: string
     title: string

@@ -7,7 +7,7 @@ import { NovelDetail } from './NovelDetail'
 import type { NovelWithEpisodes } from '@/lib/types'
 
 // テスト用のモックデータ
-const mockNovelWithEpisodes = {
+const mockNovelWithEpisodes: NovelWithEpisodes = {
   id: 1,
   title: "テスト小説",
   author: "テスト作者",
@@ -29,9 +29,9 @@ const mockNovelWithEpisodes = {
       published_at: "2025-06-08T00:00:00Z"
     }
   ]
-} as NovelWithEpisodes
+}
 
-const mockNovelWithoutEpisodes = {
+const mockNovelWithoutEpisodes: NovelWithEpisodes = {
   id: 2,
   title: "話なし小説",
   author: "テスト作者2",
@@ -40,7 +40,7 @@ const mockNovelWithoutEpisodes = {
   updated_at: "2025-07-11T12:00:00Z",
   created_at: "2025-07-11T12:00:00Z",
   episodes: []
-} as NovelWithEpisodes
+}
 
 describe('NovelDetail', () => {
   test('小説のタイトルが表示される', () => {
@@ -127,7 +127,7 @@ describe('NovelDetail', () => {
     })
 
     test('summaryがnullの場合、あらすじセクションが表示されない', () => {
-      const novelWithNullSummary = { ...mockNovelWithEpisodes, summary: null as any }
+      const novelWithNullSummary = { ...mockNovelWithEpisodes, summary: null }
       render(<NovelDetail novel={novelWithNullSummary} />)
       
       // あらすじセクションが表示されない
@@ -135,7 +135,7 @@ describe('NovelDetail', () => {
     })
 
     test('summaryがundefinedの場合、あらすじセクションが表示されない', () => {
-      const novelWithUndefinedSummary = { ...mockNovelWithEpisodes, summary: undefined as any }
+      const novelWithUndefinedSummary = { ...mockNovelWithEpisodes, summary: undefined }
       render(<NovelDetail novel={novelWithUndefinedSummary} />)
       
       // あらすじセクションが表示されない
