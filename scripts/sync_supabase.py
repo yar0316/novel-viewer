@@ -35,11 +35,33 @@ def log(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] {message}")
 
+def validate_novel_data(novel_data):
+    """小説データの妥当性をチェック"""
+    required_fields = ['title', 'author']
+    for field in required_fields:
+        if field not in novel_data or not novel_data[field]:
+            return False, f"Required field '{field}' is missing or empty"
+    
+    # tagsが配列であることを確認
+    if 'tags' in novel_data and not isinstance(novel_data['tags'], list):
+        return False, "tags must be an array"
+    
+    return True, "OK"
+
 def insert_data(table_name, data):
     """SupabaseにデータをINSERTする"""
     if not data:
         log(f"⚠️  No data to insert for table '{table_name}'")
         return None
+    
+    # novelsテーブルの場合はデータ妥当性をチェック
+    if table_name == 'novels':
+        for i, record in enumerate(data):
+            is_valid, error_msg = validate_novel_data(record)
+            if not is_valid:
+                log(f"❌ Data validation failed for record {i+1}: {error_msg}")
+                log(f"🔍 Invalid record: {json.dumps(record, indent=2, ensure_ascii=False, default=str)}")
+                return None
     
     url = f"{SUPABASE_URL}/rest/v1/{table_name}"
     
@@ -71,6 +93,15 @@ def insert_data(table_name, data):
             try:
                 error_json = e.response.json()
                 log(f"📋 Supabase error details: {json.dumps(error_json, indent=2, ensure_ascii=False)}")
+                
+                # 具体的なエラーメッセージがあるかチェック
+                if 'message' in error_json:
+                    log(f"💡 Error message: {error_json['message']}")
+                if 'hint' in error_json:
+                    log(f"💡 Hint: {error_json['hint']}")
+                if 'details' in error_json:
+                    log(f"💡 Details: {error_json['details']}")
+                    
             except:
                 log("📋 Could not parse error response as JSON")
         
@@ -133,6 +164,21 @@ def process_novel_directory(novel_dir):
         if field in novel_data:
             del novel_data[field]
     
+    # tagsフィールドが存在しない場合は空の配列を設定
+    if 'tags' not in novel_data:
+        novel_data['tags'] = []
+    
+    # tagsが文字列の場合は配列に変換
+    if isinstance(novel_data.get('tags'), str):
+        novel_data['tags'] = [novel_data['tags']]
+    
+    # tagsが配列でない場合は空の配列に設定
+    if not isinstance(novel_data.get('tags'), list):
+        novel_data['tags'] = []
+    
+    # tagsの各要素が文字列であることを確認
+    novel_data['tags'] = [str(tag).strip() for tag in novel_data['tags'] if tag]
+    
     # 日付フィールドを適切なTIMESTAMP形式に変換
     if 'created_at' in novel_data:
         # YYYY-MM-DD形式をTIMESTAMP形式に変換
@@ -146,6 +192,9 @@ def process_novel_directory(novel_dir):
     
     # 現在時刻を更新日時として設定
     novel_data['updated_at'] = datetime.now().isoformat() + 'Z'
+    
+    # デバッグ: 処理後のデータを確認
+    log(f"🔍 Processed novel data: {json.dumps(novel_data, indent=2, ensure_ascii=False, default=str)}")
     
     # エピソードファイルを処理
     episodes_data = []
