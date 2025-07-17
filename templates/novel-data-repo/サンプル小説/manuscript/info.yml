@@ -1,5 +1,5 @@
 # 小説の基本情報
-id: "sample-novel"
+# id: 1  # 任意項目：既存小説の更新時に指定（データベースのID）
 title: "サンプル小説"
 author: "サンプル作者"
 description: |
@@ -13,4 +13,6 @@ tags:
   - "冒険"
   - "魔法"
 status: "連載中"  # 連載中 / 完結 / 休載
+published: true  # 公開するかどうか（true: 公開, false: 非公開）
+updated: false  # 必須項目：更新フラグ（true: 更新, false: 新規作成または無視）
 created_at: "2025-07-13"
